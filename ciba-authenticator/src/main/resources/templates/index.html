@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .main {
+            color: #505050;
+            line-height: 24px;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        table {
+            width: 100%;
+            margin-left: 10px;
+            margin-right: 10px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+    </style>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+          }
+        }
+    </script>
+    <script
+            async
+            src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
+            crossorigin="anonymous"
+    ></script>
+    <title>Consumer Device</title>
+</head>
+<body>
+<div class="main">
+    <h1>Current authentication requests</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Message</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="auth-requests"></tbody>
+    </table>
+</div>
+<script type="module">
+    import {Client} from '@stomp/stompjs';
+
+    const stompClient = new Client({
+        brokerURL: "ws://localhost:8002/websocket",
+        onConnect: () => {
+            stompClient.subscribe("/topic/auth", message => {
+                console.log(`Received: ${message.body}`)
+                let authRequest = JSON.parse(message.body);
+                addAuthRequest(authRequest);
+            });
+            console.log("Connected! Waiting for authentication request notifications.")
+        }
+    });
+    stompClient.activate();
+
+    let tableBody = document.getElementById("auth-requests");
+
+    function addAuthRequest(request) {
+        const row = tableBody.insertRow();
+        row.insertCell().textContent = request.login_hint;
+        row.insertCell().textContent = request.binding_message;
+
+        const actions = row.insertCell();
+
+        const acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Accept';
+        acceptButton.addEventListener('click', function () {
+            stompClient.publish({
+                destination: '/app/status',
+                body: JSON.stringify({
+                    "request_id": request.request_id,
+                    "status": "SUCCEED"
+                })
+            });
+            actions.innerText = "Accepted!";
+        });
+
+        const rejectButton = document.createElement('button');
+        rejectButton.textContent = 'Reject';
+        rejectButton.addEventListener('click', function () {
+            stompClient.publish({
+                destination: '/app/status',
+                body: JSON.stringify({
+                    "request_id": request.request_id,
+                    "status": "CANCELLED"
+                })
+            });
+            actions.innerText = "Rejected!";
+        });
+
+        actions.appendChild(acceptButton);
+        actions.appendChild(rejectButton);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+rootProject.name = 'keycloak-ciba-demo'
+include ':ciba-authenticator'
+include ':ciba-commons'
+include ':ciba-consumer'
+include ':ciba-relying-party'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}

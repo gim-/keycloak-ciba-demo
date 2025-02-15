@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .main {
+            color: #505050;
+            line-height: 24px;
+            text-align: center;
+            margin-top: 100px;
+        }
+    </style>
+    <title>Consumer Device</title>
+</head>
+<body>
+<div class="main">
+    <h1>Preparing authentication request</h1>
+    <p>Open the <a href="http://localhost:8003">authenticator page</a> before submitting this form</p>
+    <form action="/poll" method="post">
+        <p>
+            <label>
+                Username:
+                <input type="text" name="username" value="tester"/>
+            </label>
+        </p>
+        <p>
+            <label>
+                Binding message:
+                <input type="text" name="message" value="demo-ciba-consumer"/>
+            </label>
+        </p>
+        <p><input type="submit" value="Request authentication"></p>
+    </form>
+</div>
+</body>
+</html>
