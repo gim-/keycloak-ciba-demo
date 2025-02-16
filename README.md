@@ -2,6 +2,19 @@
 
 This is a demonstration of CIBA authentication flow with Keycloak as authorization server.
 
+```mermaid
+sequenceDiagram
+    ciba-consumer->>Keycloak: Authentication request (scope, username, message)
+    Keycloak->>ciba-relying-party: Authentication request data to backchannel URI
+    ciba-relying-party->>Keycloak: HTTP 201
+    Keycloak->>ciba-consumer: auth_req_id, expires_in, interval
+    ciba-relying-party->>ciba-authenticator: Notification
+    ciba-authenticator->>ciba-relying-party: Accept/Reject
+    ciba-relying-party->>Keycloak: Status (SUCCEED/UNAUTHORIZED/CANCELLED)
+    ciba-consumer->>Keycloak: Poll status
+    Keycloak->>ciba-consumer: Issue access token, ID token, refresh token
+```
+
 ## Requirements
 
 - JDK 21
