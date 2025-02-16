@@ -11,7 +11,7 @@ sequenceDiagram
     ciba-relying-party->>ciba-authenticator: Notification
     ciba-authenticator->>ciba-relying-party: Accept/Reject
     ciba-relying-party->>Keycloak: Status (SUCCEED/UNAUTHORIZED/CANCELLED)
-    ciba-consumer->>Keycloak: Poll status
+    ciba-consumer->>Keycloak: Poll status using auth_req_id
     Keycloak->>ciba-consumer: Issue access token, ID token, refresh token
 ```
 
